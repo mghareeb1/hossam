@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hossam Service Express - Premium Automotive Care</title>
+    <!-- استدعاء خط Montserrat العالمي لضمان التناسق والفخامة البصرية -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================
+           الهوية البصرية والألوان المعتمدة لمركز السيارات
+           ========================================== */
+        :root {
+            --bg-metallic-charcoal: #141619; /* رمادي كربوني ميتاليك فخم لخلفية الهيكل */
+            --accent-orange-red: #ff5722;    /* البرتقالي الرياضي الحيوي لعلامات التفاعل والتوجه */
+            --glass-bg: rgba(30, 32, 35, 0.75); /* خلفية زجاجية متوافقة مع روح الكربون */
+            --glass-border: rgba(255, 255, 255, 0.03);
+            --text-pure: #ffffff;
+            --text-muted: #8e9297;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', 'Segoe UI', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-metallic-charcoal);
+            /* دمج نمط الخطوط الهندسية الرياضية الخافتة جداً للتعبير عن طابع الهندسة والصيانة */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+            background-size: 25px 25px;
+            color: var(--text-pure);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 50px 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ==========================================
+           شاشة التحميل السينمائية (Cinematic Loader)
+           ========================================== */
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-metallic-charcoal);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.6s;
+        }
+        
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.03);
+            border-top-color: var(--accent-orange-red);
+            border-radius: 50%;
+            animation: spin 1s infinite linear;
+        }
+
+        .loader-text {
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        body.loaded #loader {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* ==========================================
+           المحتوى الأساسي والتنسيقات الهيكلية
+           ========================================== */
+        .container {
+            z-index: 2;
+            width: 100%;
+            max-width: 340px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            justify-content: space-between;
+        }
+
+        .header-container {
+            text-align: center;
+            margin-bottom: 35px;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 0.8s cubic-bezier(0.215, 0.610, 0.355, 1) 0.2s;
+        }
+
+        /* مساحة مخصصة ومؤقتة للشعار لحين اختياره ورفعه */
+        .logo-placeholder {
+            width: 85px;
+            height: 85px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #1e2023, #111214);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-orange-red);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            color: var(--text-pure);
+        }
+
+        .brand-subtitle {
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 400;
+        }
+
+        /* ==========================================
+           أزرار لوحة التوجيه والعمليات العمودية الفخمة
+           ========================================== */
+        .grid-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 0.8s cubic-bezier(0.215, 0.610, 0.355, 1) 0.4s;
+        }
+
+        body.loaded .header-container,
+        body.loaded .grid-container,
+        body.loaded .footer-container {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .action-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            color: var(--text-pure);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 18px 24px;
+            border-radius: 14px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), 0 0 20px 0 rgba(255, 87, 34, 0.02);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* تأثير الوميض الضوئي الميتاليك (Shimmer Effect) */
+        .action-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -150%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.04), transparent);
+            transform: skewX(-20deg);
+            transition: none;
+        }
+
+        .action-card:hover::after {
+            left: 150%;
+            transition: all 0.8s ease-in-out;
+        }
+
+        /* تأثيرات التفاعل والتمرير الفخمة للسيارات */
+        .action-card:hover, .action-card:active {
+            border-color: rgba(255, 87, 34, 0.45);
+            background: rgba(30, 32, 35, 0.9);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(255, 87, 34, 0.12);
+        }
+
+        .card-icon-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            fill: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+
+        .action-card:hover .card-icon-wrapper {
+            border-color: var(--accent-orange-red);
+            fill: var(--accent-orange-red);
+            background: rgba(255, 87, 34, 0.05);
+        }
+
+        .card-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        .action-card:hover .card-title {
+            color: var(--accent-orange-red);
+        }
+
+        .card-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* ==========================================
+           أسفل الصفحة (Premium Footer)
+           ========================================== */
+        .footer-container {
+            text-align: center;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 0.8s cubic-bezier(0.215, 0.610, 0.355, 1) 0.6s;
+        }
+
+        .footer-text {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            opacity: 0.5;
+            letter-spacing: 1.5px;
+            font-weight: 300;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- شاشة التحميل السينمائية العازلة لمكونات الصفحة حتى اكتمالها -->
+    <div id="loader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">Hossam Service Express</div>
+    </div>
+
+    <!-- الحاوية المركزية الفاخرة للمحتوى -->
+    <div class="container">
+        
+        <!-- رأس الصفحة والهوية البصرية المؤقتة -->
+        <div class="header-container">
+            <div class="logo-placeholder">H</div>
+            <h1 class="brand-title">Hossam Service Express</h1>
+            <p class="brand-subtitle">Premium Automotive Center</p>
+        </div>
+
+        <!-- شبكة الخيارات التفاعلية الموجهة للعملاء -->
+        <div class="grid-container">
+            
+            <!-- Google Maps Review Button -->
+            <a href="https://maps.app.goo.gl/QaJVYfyUP12T6urK6" target="_blank" class="action-card" aria-label="Rate Us on Google Maps">
+                <div class="card-icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                </div>
+                <div class="card-details">
+                    <span class="card-title">Rate Us on Maps</span>
+                    <span class="card-desc">شاركنا تقييمك وتجربتك مباشرة</span>
+                </div>
+            </a>
+
+            <!-- WhatsApp Customer Service Button -->
+            <a href="https://wa.me/201222812660?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20Hossam%20Service%20Express%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B5%D9%8A%D8%A7%D9%86%D8%A9" target="_blank" class="action-card" aria-label="Customer Service via WhatsApp">
+                <div class="card-icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.218-4.204l.369.219c1.61 0.955 3.678 1.46 5.815 1.461 5.485 0 9.948-4.405 9.951-9.82 0.002-2.624-1.017-5.092-2.87-6.948-1.851-1.854-4.312-2.876-6.932-2.877-5.486 0-9.952 4.406-9.955 9.822-.001 2.152 0.563 4.254 1.633 6.096l.241.412-1.003 3.665 3.752-.984z"/></svg>
+                </div>
+                <div class="card-details">
+                    <span class="card-title">Customer Service</span>
+                    <span class="card-desc">استفسارات الصيانة وحجز المواعيد</span>
+                </div>
+            </a>
+
+            <!-- WhatsApp Complaints and Suggestions Button -->
+            <a href="https://wa.me/201222812660?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9%20Hossam%20Service%20Express%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%AA%D9%82%D8%AF%D9%8A%D9%85%20%D8%B4%D9%83%D9%84%D9%89%2F%D8%A7%D9%82%D8%AA%D8%B1%D8%A7%D8%AD" target="_blank" class="action-card" aria-label="Complaints and Suggestions via WhatsApp">
+                <div class="card-icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.218-4.204l.369.219c1.61 0.955 3.678 1.46 5.815 1.461 5.485 0 9.948-4.405 9.951-9.82 0.002-2.624-1.017-5.092-2.87-6.948-1.851-1.854-4.312-2.876-6.932-2.877-5.486 0-9.952 4.406-9.955 9.822-.001 2.152 0.563 4.254 1.633 6.096l.241.412-1.003 3.665 3.752-.984z"/></svg>
+                </div>
+                <div class="card-details">
+                    <span class="card-title">Complaints & Suggestions</span>
+                    <span class="card-desc">تقديم الشكاوى والاقتراحات للإدارة</span>
+                </div>
+            </a>
+
+            <!-- Pay via InstaPay Button (Copy Number) -->
+            <a href="javascript:void(0);" onclick="copyInstapayNumber();" class="action-card" aria-label="Pay via InstaPay">
+                <div class="card-icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M11 21h-1l1.5-6.5h-4l5.5-11.5h1l-1.5 6.5h4L11 21z"/></svg>
+                </div>
+                <div class="card-details">
+                    <span class="card-title">Pay via InstaPay</span>
+                    <span class="card-desc">انقر لنسخ رقم الحساب والدفع فوراً</span>
+                </div>
+            </a>
+
+            <!-- Pay via Vodafone Cash Button (Copy Number) -->
+            <a href="javascript:void(0);" onclick="copyVodafoneNumber();" class="action-card" aria-label="Pay via Vodafone Cash">
+                <div class="card-icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M21 18c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V6c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v12zm-2 0v-6H12v6h7zm-9 0V4H5v14h5zm11-6H19v2h2v-2z"/></svg>
+                </div>
+                <div class="card-details">
+                    <span class="card-title">Pay via Vodafone Cash</span>
+                    <span class="card-desc">انقر لنسخ رقم المحفظة المعتمدة للتحويل</span>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- تذييل الصفحة -->
+        <div class="footer-container">
+            <div class="footer-text">© 2026 Hossam Service Express. All Rights Reserved.</div>
+        </div>
+
+    </div>
+
+    <script>
+        /**
+         * @function copyInstapayNumber
+         * @description نسخ رقم حساب إنستاباي المعتمد لمركز الصيانة تلقائياً لحافظة جهاز العميل بمجرد النقر، مع عرض رسالة تنبيهية احترافية.
+         * @features تعتمد بالكامل على بروتوكول Clipboard API الحديث لضمان التوافقية والأمان المرتفع على الهواتف.
+         * @connected_to مربوطة هندسياً بحدث النقر المباشر (onclick) لكارت الدفع الرابع الخاص بإنستاباي.
+         * @advice نصائح عند التعامل معها: في حال الرغبة بتحديث رقم الهاتف الخاص بالحساب مستقبلاً، يتم فقط استبدال القيمة النصية للمتغير instapayNum دون أي تعديل هيكلي.
+         */
+        function copyInstapayNumber() {
+            const instapayNum = '01110696668';
+            navigator.clipboard.writeText(instapayNum).then(() => {
+                alert('تم نسخ رقم حساب إنستاباي بنجاح: ' + instapayNum + '\nيمكنكم الآن فتح تطبيق InstaPay وإتمام عملية التحويل الفوري.');
+            }).catch(err => {
+                console.error('فشل نظام النسخ التلقائي للمتصفح:', err);
+                alert('رقم حساب إنستاباي المعتمد للتحويل هو: ' + instapayNum);
+            });
+        }
+
+        /**
+         * @function copyVodafoneNumber
+         * @description نسخ رقم محفظة فودافون كاش الرسمية للمركز تلقائياً لحافظة العميل بمجرد النقر، مع عرض رسالة تنبيهية ترحيبية واحترافية.
+         * @features تفعيل معيار تجربة المستخدم للنسخ السريع لتقليل احتمالية إدخال أرقام خاطئة من قِبل العميل.
+         * @connected_to مربوطة هندسياً بحدث النقر المباشر (onclick) لكارت الدفع الخامس الخاص بفودافون كاش.
+         * @advice نصائح عند التعامل معها: في حال تحديث رقم محفظة كاش مستقبلاً، يتم فقط استبدال القيمة النصية للمتغير vodafoneNum في السطر البرمجي المخصص بالأسفل.
+         */
+        function copyVodafoneNumber() {
+            const vodafoneNum = '01038515755';
+            navigator.clipboard.writeText(vodafoneNum).then(() => {
+                alert('تم نسخ رقم محفظة فودافون كاش بنجاح: ' + vodafoneNum + '\nيمكنكم الآن الانتقال لتطبيق المحفظة وإتمام عملية التحويل.');
+            }).catch(err => {
+                console.error('فشل نظام النسخ التلقائي للمتصفح:', err);
+                alert('رقم محفظة فودافون كاش للتحويل هو: ' + vodafoneNum);
+            });
+        }
+    </script>
+
+    <script>
+        /**
+         * @function DOMContentLoaded_Handler
+         * @description تتحكم في إدارة إخفاء شاشة التحميل الدائرية بنعومة بعد ثانية واحدة لضمان سلاسة حركة العناصر وتهيئة المشهد البصري للعميل.
+         */
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
