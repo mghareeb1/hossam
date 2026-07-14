@@ -8,13 +8,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* ==========================================
-           الهوية البصرية والألوان المعتمدة لمركز السيارات
+           الهوية البصرية والألوان المعتمدة بناءً على الشعار
            ========================================== */
         :root {
-            --bg-metallic-charcoal: #141619; /* رمادي كربوني ميتاليك فخم لخلفية الهيكل */
-            --accent-orange-red: #ff5722;    /* البرتقالي الرياضي الحيوي لعلامات التفاعل والتوجه */
-            --glass-bg: rgba(30, 32, 35, 0.75); /* خلفية زجاجية متوافقة مع روح الكربون */
-            --glass-border: rgba(255, 255, 255, 0.03);
+            --bg-metallic-charcoal: #0e1012; /* رمادي كربوني فخم لإبراز كروم الشعار عالي التباين */
+            --accent-red: #c61a29;           /* الأحمر الميتاليك المستخلص من كتلة المحرك في الشعار */
+            --accent-blue: #1b4d8d;          /* الأزرق الفاخر المستخلص من كلمة Express */
+            --glass-bg: rgba(22, 24, 28, 0.85); /* حاويات زجاجية داكنة لتوحيد الرؤية البصرية */
+            --glass-border: rgba(255, 255, 255, 0.02);
             --text-pure: #ffffff;
             --text-muted: #8e9297;
         }
@@ -29,10 +30,10 @@
 
         body {
             background-color: var(--bg-metallic-charcoal);
-            /* دمج نمط الخطوط الهندسية الرياضية الخافتة جداً للتعبير عن طابع الهندسة والصيانة */
+            /* نمط خطوط هندسية بالغة الخفوت لتعزيز المظهر الرياضي والصناعي الفاخر */
             background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+                linear-gradient(rgba(255, 255, 255, 0.008) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.008) 1px, transparent 1px);
             background-size: 25px 25px;
             color: var(--text-pure);
             min-height: 100vh;
@@ -46,7 +47,7 @@
         }
 
         /* ==========================================
-           شاشة التحميل السينمائية (Cinematic Loader)
+           شاشة التحميل السينمائية بنبض الشعار الفعلي (Cinematic Loader)
            ========================================== */
         #loader {
             position: fixed;
@@ -54,33 +55,20 @@
             background-color: var(--bg-metallic-charcoal);
             z-index: 9999;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 15px;
             transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.6s;
         }
         
-        .loader-spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255, 255, 255, 0.03);
-            border-top-color: var(--accent-orange-red);
-            border-radius: 50%;
-            animation: spin 1s infinite linear;
+        .loader-logo {
+            max-width: 210px;
+            height: auto;
+            animation: pulseGlow 2s infinite ease-in-out;
         }
 
-        .loader-text {
-            font-size: 0.8rem;
-            letter-spacing: 4px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(0.97); filter: drop-shadow(0 0 10px rgba(198, 26, 41, 0.15)); opacity: 0.6; }
+            50% { transform: scale(1.03); filter: drop-shadow(0 0 25px rgba(198, 26, 41, 0.45)); opacity: 1; }
         }
 
         body.loaded #loader {
@@ -110,29 +98,11 @@
             transition: all 0.8s cubic-bezier(0.215, 0.610, 0.355, 1) 0.2s;
         }
 
-        /* مساحة مخصصة ومؤقتة للشعار لحين اختياره ورفعه */
-        .logo-placeholder {
-            width: 85px;
-            height: 85px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, #1e2023, #111214);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px auto;
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent-orange-red);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-        }
-
-        .brand-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-            color: var(--text-pure);
+        .logo-img {
+            max-width: 250px;
+            height: auto;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.55));
         }
 
         .brand-subtitle {
@@ -177,12 +147,12 @@
             border-radius: 14px;
             border: 1px solid var(--glass-border);
             transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3), 0 0 20px 0 rgba(255, 87, 34, 0.02);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
             position: relative;
             overflow: hidden;
         }
 
-        /* تأثير الوميض الضوئي الميتاليك (Shimmer Effect) */
+        /* تأثير الوميض الضوئي الميتاليك السريع (Shimmer Effect) */
         .action-card::after {
             content: '';
             position: absolute;
@@ -197,12 +167,38 @@
             transition: all 0.8s ease-in-out;
         }
 
-        /* تأثيرات التفاعل والتمرير الفخمة للسيارات */
-        .action-card:hover, .action-card:active {
-            border-color: rgba(255, 87, 34, 0.45);
-            background: rgba(30, 32, 35, 0.9);
+        /* تفاعل البطاقات الحيوية حسب تصنيفات الهوية (Red/Blue States) */
+        .action-card:hover {
+            background: rgba(22, 24, 28, 0.95);
             transform: translateY(-3px);
-            box-shadow: 0 12px 24px rgba(255, 87, 34, 0.12);
+        }
+
+        /* تفاعل أزرار المعاملات المباشرة والتقييم (الأحمر الميتاليك) */
+        .card-red:hover {
+            border-color: rgba(198, 26, 41, 0.45);
+            box-shadow: 0 12px 24px rgba(198, 26, 41, 0.12);
+        }
+        .card-red:hover .card-icon-wrapper {
+            border-color: var(--accent-red);
+            fill: var(--accent-red);
+            background: rgba(198, 26, 41, 0.05);
+        }
+        .card-red:hover .card-title {
+            color: var(--accent-red);
+        }
+
+        /* تفاعل أزرار خدمة العملاء والشكاوى (الأزرق الفخم) */
+        .card-blue:hover {
+            border-color: rgba(27, 77, 141, 0.45);
+            box-shadow: 0 12px 24px rgba(27, 77, 141, 0.12);
+        }
+        .card-blue:hover .card-icon-wrapper {
+            border-color: var(--accent-blue);
+            fill: var(--accent-blue);
+            background: rgba(27, 77, 141, 0.05);
+        }
+        .card-blue:hover .card-title {
+            color: var(--accent-blue);
         }
 
         .card-icon-wrapper {
@@ -212,16 +208,10 @@
             width: 40px;
             height: 40px;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid rgba(255, 255, 255, 0.03);
             fill: var(--text-muted);
             transition: all 0.3s ease;
-        }
-
-        .action-card:hover .card-icon-wrapper {
-            border-color: var(--accent-orange-red);
-            fill: var(--accent-orange-red);
-            background: rgba(255, 87, 34, 0.05);
         }
 
         .card-details {
@@ -235,10 +225,6 @@
             font-weight: 600;
             letter-spacing: 0.5px;
             transition: color 0.3s ease;
-        }
-
-        .action-card:hover .card-title {
-            color: var(--accent-orange-red);
         }
 
         .card-desc {
@@ -271,25 +257,23 @@
 
     <!-- شاشة التحميل السينمائية العازلة لمكونات الصفحة حتى اكتمالها -->
     <div id="loader">
-        <div class="loader-spinner"></div>
-        <div class="loader-text">Hossam Service Express</div>
+        <img src="logo.png" alt="Loading Hossam Service Express..." class="loader-logo">
     </div>
 
     <!-- الحاوية المركزية الفاخرة للمحتوى -->
     <div class="container">
         
-        <!-- رأس الصفحة والهوية البصرية المؤقتة -->
+        <!-- رأس الصفحة والهوية البصرية المعتمدة -->
         <div class="header-container">
-            <div class="logo-placeholder">H</div>
-            <h1 class="brand-title">Hossam Service Express</h1>
+            <img src="logo.png" alt="Hossam Service Express Logo" class="logo-img">
             <p class="brand-subtitle">Premium Automotive Center</p>
         </div>
 
         <!-- شبكة الخيارات التفاعلية الموجهة للعملاء -->
         <div class="grid-container">
             
-            <!-- Google Maps Review Button (الرابط المباشر للتقييم الفوري) -->
-            <a href="https://search.google.com/local/writereview?placeid=ChIJJ1KZR_E-WBQRb4YdwIv6Zk0" target="_blank" class="action-card" aria-label="Rate Us on Google Maps">
+            <!-- Google Maps Review Button (التوجيه التلقائي لنافذة النجوم الخمسة عبر الـ Place ID) -->
+            <a href="https://search.google.com/local/writereview?placeid=ChIJJ1KZR_E-WBQRb4YdwIv6Zk0" target="_blank" class="action-card card-red" aria-label="Rate Us on Google Maps">
                 <div class="card-icon-wrapper">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
                 </div>
@@ -300,7 +284,7 @@
             </a>
 
             <!-- WhatsApp Customer Service Button -->
-            <a href="https://wa.me/201222812660?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20Hossam%20Service%20Express%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B5%D9%8A%D8%A7%D9%86%D8%A9" target="_blank" class="action-card" aria-label="Customer Service via WhatsApp">
+            <a href="https://wa.me/201222812660?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20Hossam%20Service%20Express%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%A7%D9%84%D8%A7%D3%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%B9%D9%86%20%D8%AE%DAF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D8%B5%D9%8A%D8%A7%D9%86%D8%A9" target="_blank" class="action-card card-blue" aria-label="Customer Service via WhatsApp">
                 <div class="card-icon-wrapper">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.218-4.204l.369.219c1.61 0.955 3.678 1.46 5.815 1.461 5.485 0 9.948-4.405 9.951-9.82 0.002-2.624-1.017-5.092-2.87-6.948-1.851-1.854-4.312-2.876-6.932-2.877-5.486 0-9.952 4.406-9.955 9.822-.001 2.152 0.563 4.254 1.633 6.096l.241.412-1.003 3.665 3.752-.984z"/></svg>
                 </div>
@@ -310,8 +294,8 @@
                 </div>
             </a>
 
-            <!-- WhatsApp Complaints and Suggestions Button (تم تصحيح الصياغة الإملائية) -->
-            <a href="https://wa.me/201222812660?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9%20Hossam%20Service%20Express%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%AA%D9%82%D8%AF%D9%8a%D9%85%20%D8%B4%D9%83%D9%88%D9%89%2F%D8%A7%D9%82%D8%AA%D8%B1%D8%A7%D1%85" target="_blank" class="action-card" aria-label="Complaints and Suggestions via WhatsApp">
+            <!-- WhatsApp Complaints and Suggestions Button (تم تصحيح الصياغة اللغوية بدقة) -->
+            <a href="https://wa.me/201222812660?text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B%20%D8%A5%D8%AF%D8%A7%D8%B1%D8%A9%20Hossam%20Service%20Express%D8%8C%20%D8%A3%D9%88%D8%AF%20%D8%AA%D9%82%D8%AF%D9%8A%D9%85%20%D8%B4%D9%83%D9%88%D9%89%2F%D8%A7%D9%82%D8%AA%D8%B1%D8%A7%D8%AD" target="_blank" class="action-card card-blue" aria-label="Complaints and Suggestions via WhatsApp">
                 <div class="card-icon-wrapper">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.218-4.204l.369.219c1.61 0.955 3.678 1.46 5.815 1.461 5.485 0 9.948-4.405 9.951-9.82 0.002-2.624-1.017-5.092-2.87-6.948-1.851-1.854-4.312-2.876-6.932-2.877-5.486 0-9.952 4.406-9.955 9.822-.001 2.152 0.563 4.254 1.633 6.096l.241.412-1.003 3.665 3.752-.984z"/></svg>
                 </div>
@@ -322,7 +306,7 @@
             </a>
 
             <!-- Pay via InstaPay Button (Copy Number) -->
-            <a href="javascript:void(0);" onclick="copyInstapayNumber();" class="action-card" aria-label="Pay via InstaPay">
+            <a href="javascript:void(0);" onclick="copyInstapayNumber();" class="action-card card-red" aria-label="Pay via InstaPay">
                 <div class="card-icon-wrapper">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M11 21h-1l1.5-6.5h-4l5.5-11.5h1l-1.5 6.5h4L11 21z"/></svg>
                 </div>
@@ -333,7 +317,7 @@
             </a>
 
             <!-- Pay via Vodafone Cash Button (Copy Number) -->
-            <a href="javascript:void(0);" onclick="copyVodafoneNumber();" class="action-card" aria-label="Pay via Vodafone Cash">
+            <a href="javascript:void(0);" onclick="copyVodafoneNumber();" class="action-card card-red" aria-label="Pay via Vodafone Cash">
                 <div class="card-icon-wrapper">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M21 18c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V6c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v12zm-2 0v-6H12v6h7zm-9 0V4H5v14h5zm11-6H19v2h2v-2z"/></svg>
                 </div>
