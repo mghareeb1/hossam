@@ -581,89 +581,105 @@ function handleSearch(event) {
          * @advice نصائح عند التعامل معها: عند إضافة أعمدة جديدة في شيت جوجل، يرجى التأكد من إضافة المفاتيح الموازية لها في هذه الدالة.
          * @param {Array|Object} data - كائن الاستجابة المحتوي على سجلات صيانة العميل.
          */
-        function renderResults(data) {
-            const resultsArea = document.getElementById('resultsArea');
-            resultsArea.innerHTML = '';
+        /**
+ * @function renderResults
+ * @description معالجة المصفوفة البرمجية الواردة من السكريبت وعرض كروت سجلات الصيانة بتصميم مطابق تماماً لنظام الورشة الداخلي (POS Master)، مع ترتيب النتائج تنازلياً من الأحدث إلى الأقدم.
+ * @features 
+ * - عكس ترتيب السجلات برمجياً لإظهار العمليات الأحدث في أعلى الخط الزمني.
+ * - عرض خط زمني شجري (Timeline) مع طابع تاريخ ووقت الإنشاء بالدقة الكاملة.
+ * - تقسيم بيانات الصيانة إلى قسمين مستقلين: (ما تم إنجازه بالسيارة) و (قطع الغيار والزيوت المستهلكة).
+ * - تعيين القيم الافتراضية الرسمية ("غير مسجل"، "غير محدد") عند غياب البيانات القديمة.
+ * - معالجة الحماية من هجمات XSS عبر دالة escapeHtml.
+ * @connected_to تم استدعاؤها داخل دالة `handleSearch` بعد استلام الـ JSON بنجاح.
+ * @advice نصائح عند التعامل معها: تتم عملية عكس الترتيب على نسخة من المصفوفة تجنباً للتعديل على البيانات الأصلية، وعند إضافة أعمدة جديدة في شيت جوجل يرجى مطابقة المفاتيح هنا.
+ * @param {Array|Object} data - كائن الاستجابة المحتوي على سجلات صيانة العميل.
+ */
+function renderResults(data) {
+    const resultsArea = document.getElementById('resultsArea');
+    resultsArea.innerHTML = '';
 
-            // التحقق من وجود نتائج ملموسة
-            if (!data || (Array.isArray(data) && data.length === 0) || data.status === 'not_found') {
-                resultsArea.innerHTML = '<div class="status-box">لم يتم العثور على سجلات صيانة تطابق البيانات المدخلة. يرجى التأكد من الاسم ورقم الهاتف ومراجعة المركز.</div>';
-                return;
-            }
+    // التحقق من وجود نتائج ملموسة
+    if (!data || (Array.isArray(data) && data.length === 0) || data.status === 'not_found') {
+        resultsArea.innerHTML = '<div class="status-box">لم يتم العثور على سجلات صيانة تطابق البيانات المدخلة. يرجى التأكد من الاسم ورقم الهاتف ومراجعة المركز.</div>';
+        return;
+    }
 
-            const records = Array.isArray(data) ? data : (data.records || []);
+    const records = Array.isArray(data) ? data : (data.records || []);
 
-            if (records.length === 0) {
-                resultsArea.innerHTML = '<div class="status-box">لم يتم العثور على سجلات صيانة تطابق البيانات المدخلة.</div>';
-                return;
-            }
+    if (records.length === 0) {
+        resultsArea.innerHTML = '<div class="status-box">لم يتم العثور على سجلات صيانة تطابق البيانات المدخلة.</div>';
+        return;
+    }
 
-            // إنشاء حاوية الشريط الزمني
-            const timelineWrapper = document.createElement('div');
-            timelineWrapper.className = 'timeline-wrapper';
+    // عكس ترتيب السجلات ليكون الأحدث في الأعلى والأقدم في الأسفل
+    const reversedRecords = records.slice().reverse();
 
-            // عرض كل كارت صيانة بتنسيق مطابق لنظام POS Master
-            records.forEach(item => {
-                const node = document.createElement('div');
-                node.className = 'timeline-node';
+    // إنشاء حاوية الشريط الزمني
+    const timelineWrapper = document.createElement('div');
+    timelineWrapper.className = 'timeline-wrapper';
 
-                // استخراج الحقول برمجياً مع دعم مختلف التسميات المحتملة
-                const cardId = item.card_id || item['رقم الكارت'] || item.id || 'غير مسجل';
-                const createdDate = item.created_at || item['تاريخ الإنشاء'] || item.date || item['التاريخ'] || 'غير محدد';
-                const kmValue = (item.mileage && String(item.mileage).trim() !== '') ? `${item.mileage} كم` : (item['قراءة العداد'] && String(item['قراءة العداد']).trim() !== '' ? `${item['قراءة العداد']} كم` : 'غير مسجل');
-                const techValue = item.technician || item['الفني المسؤول'] || item['الفني'] || 'غير محدد';
-                const carModelValue = item.car_model || item['السيارة / الموديل'] || item['السيارة'] || 'Volkswagen';
-                const statusValue = item.status || item['حالة الكارت'] || item['الحالة'] || 'تقرير فني خروج';
+    // عرض كل كارت صيانة بتنسيق مطابق لنظام POS Master
+    reversedRecords.forEach(item => {
+        const node = document.createElement('div');
+        node.className = 'timeline-node';
 
-                // التفاصيل والقطع
-                const servicesDoneValue = item.services_done || item['ما تم إنجازه'] || item.details || item['البيان'] || 'لا توجد تفاصيل أعمال مسجلة';
-                const partsUsedValue = item.parts_used || item['قطع الغيار والزيوت'] || item['قطع الغيار'] || 'لا توجد قطع غيار مسجلة';
+        // استخراج الحقول برمجياً مع دعم مختلف التسميات المحتملة
+        const cardId = item.card_id || item['رقم الكارت'] || item.id || 'غير مسجل';
+        const createdDate = item.created_at || item['تاريخ الإنشاء'] || item.date || item['التاريخ'] || 'غير محدد';
+        const kmValue = (item.mileage && String(item.mileage).trim() !== '') ? `${item.mileage} كم` : (item['قراءة العداد'] && String(item['قراءة العداد']).trim() !== '' ? `${item['قراءة العداد']} كم` : 'غير مسجل');
+        const techValue = item.technician || item['الفني المسؤول'] || item['الفني'] || 'غير محدد';
+        const carModelValue = item.car_model || item['السيارة / الموديل'] || item['السيارة'] || 'Volkswagen';
+        const statusValue = item.status || item['حالة الكارت'] || item['الحالة'] || 'تقرير فني خروج';
 
-                node.innerHTML = `
-                    <div class="timeline-date-header">
-                        <span>🕒 ${escapeHtml(String(createdDate))}</span>
+        // التفاصيل والقطع
+        const servicesDoneValue = item.services_done || item['ما تم إنجازه'] || item.details || item['البيان'] || 'لا توجد تفاصيل أعمال مسجلة';
+        const partsUsedValue = item.parts_used || item['قطع الغيار والزيوت'] || item['قطع الغيار'] || 'لا توجد قطع غيار مسجلة';
+
+        node.innerHTML = `
+            <div class="timeline-date-header">
+                <span>🕒 ${escapeHtml(String(createdDate))}</span>
+            </div>
+
+            <div class="system-card">
+                <!-- الشريط العلوي لطلب الصيانة -->
+                <div class="system-card-top">
+                    <div class="order-title">
+                        🛠️ أمر صيانة الورشة #${escapeHtml(String(cardId))}
                     </div>
-
-                    <div class="system-card">
-                        <!-- الشريط العلوي لطلب الصيانة -->
-                        <div class="system-card-top">
-                            <div class="order-title">
-                                🛠️ أمر صيانة الورشة #${escapeHtml(String(cardId))}
-                            </div>
-                            <div class="badges-wrapper">
-                                <span class="sys-badge sys-badge-tech">👤 الفني: ${escapeHtml(String(techValue))}</span>
-                                <span class="sys-badge sys-badge-km">🌐 العداد: ${escapeHtml(String(kmValue))}</span>
-                                <span class="sys-badge-report">${escapeHtml(String(statusValue))}</span>
-                            </div>
-                        </div>
-
-                        <!-- قسم ما تم إنجازه بالسيارة -->
-                        <div class="detail-section">
-                            <div class="detail-section-title">⚙️ ما تم إنجازه بالسيارة:</div>
-                            <div class="detail-section-body">${escapeHtml(String(servicesDoneValue))}</div>
-                            <div class="detail-section-footer">
-                                <span class="tag-status-label">DONE |||||</span>
-                                <span class="tag-car-model">${escapeHtml(String(carModelValue))}</span>
-                            </div>
-                        </div>
-
-                        <!-- قسم قطع الغيار والزيوت المستهلكة -->
-                        <div class="detail-section">
-                            <div class="detail-section-title">⚙️ قطع الغيار والزيوت المستهلكة:</div>
-                            <div class="detail-section-body">${escapeHtml(String(partsUsedValue))}</div>
-                            <div class="detail-section-footer">
-                                <span class="tag-status-label">PARTS |||||</span>
-                                <span class="tag-car-model">${escapeHtml(String(carModelValue))}</span>
-                            </div>
-                        </div>
+                    <div class="badges-wrapper">
+                        <span class="sys-badge sys-badge-tech">👤 الفني: ${escapeHtml(String(techValue))}</span>
+                        <span class="sys-badge sys-badge-km">🌐 العداد: ${escapeHtml(String(kmValue))}</span>
+                        <span class="sys-badge-report">${escapeHtml(String(statusValue))}</span>
                     </div>
-                `;
+                </div>
 
-                timelineWrapper.appendChild(node);
-            });
+                <!-- قسم ما تم إنجازه بالسيارة -->
+                <div class="detail-section">
+                    <div class="detail-section-title">⚙️ ما تم إنجازه بالسيارة:</div>
+                    <div class="detail-section-body">${escapeHtml(String(servicesDoneValue))}</div>
+                    <div class="detail-section-footer">
+                        <span class="tag-status-label">DONE |||||</span>
+                        <span class="tag-car-model">${escapeHtml(String(carModelValue))}</span>
+                    </div>
+                </div>
 
-            resultsArea.appendChild(timelineWrapper);
-        }
+                <!-- قسم قطع الغيار والزيوت المستهلكة -->
+                <div class="detail-section">
+                    <div class="detail-section-title">⚙️ قطع الغيار والزيوت المستهلكة:</div>
+                    <div class="detail-section-body">${escapeHtml(String(partsUsedValue))}</div>
+                    <div class="detail-section-footer">
+                        <span class="tag-status-label">PARTS |||||</span>
+                        <span class="tag-car-model">${escapeHtml(String(carModelValue))}</span>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        timelineWrapper.appendChild(node);
+    });
+
+    resultsArea.appendChild(timelineWrapper);
+}
 
         /**
          * @function escapeHtml
