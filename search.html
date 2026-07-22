@@ -457,49 +457,47 @@
          * @connected_to تم استدعاؤها داخل دالة `handleSearch` بعد استلام الـ JSON بنجاح.
          */
         function renderResults(data) {
-            const resultsArea = document.getElementById('resultsArea');
-            resultsArea.innerHTML = '';
+    const resultsArea = document.getElementById('resultsArea');
+    resultsArea.innerHTML = '';
 
-            // التحقق من وجود نتائج ملموسة
-            if (!data || (Array.isArray(data) && data.length === 0) || data.status === 'not_found') {
-                resultsArea.innerHTML = '<div class="status-box">لم يتم العثور على سجلات صيانة تطابق البيانات المدخلة. يرجى التأكد من الاسم ورقم الهاتف ومراجعة المركز.</div>';
-                return;
-            }
+    if (!data || (Array.isArray(data) && data.length === 0) || data.status === 'not_found') {
+        resultsArea.innerHTML = '<div class="status-box">لم يتم العثور على سجلات صيانة تطابق البيانات المدخلة. يرجى التأكد من الاسم ورقم الهاتف ومراجعة المركز.</div>';
+        return;
+    }
 
-            const records = Array.isArray(data) ? data : (data.records || []);
+    const records = Array.isArray(data) ? data : (data.records || []);
 
-            if (records.length === 0) {
-                resultsArea.innerHTML = '<div class="status-box">لم يتم العثور على سجلات صيانة تطابق البيانات المدخلة.</div>';
-                return;
-            }
+    if (records.length === 0) {
+        resultsArea.innerHTML = '<div class="status-box">لم يتم العثور على سجلات صيانة تطابق البيانات المدخلة.</div>';
+        return;
+    }
 
-            // عرض كل كارت صيانة بترتيب زمني
-            records.forEach(item => {
-                const card = document.createElement('div');
-                card.className = 'record-card';
+    records.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'record-card';
 
-                const dateText = item.date || item.التاريخ || 'غير محدد';
-                const kmText = item.km || item.العداد || 'N/A';
-                const detailsText = item.details || item.البيان || item.تفاصيل_الصيانة || 'صيانة دورية عامة';
-                const techText = item.technician || item.الفني || 'قسم الصيانة المعتمد';
+        const dateText = item.date || item.التاريخ || 'غير محدد';
+        const kmText = item.km || item.العداد || 'N/A';
+        const detailsText = item.details || item.البيان || item.تفاصيل_الصيانة || 'صيانة دورية عامة';
+        const techText = item.technician || item.الفني || 'قسم الصيانة المعتمد';
 
-                card.innerHTML = `
-                    <div class="record-header">
-                        <span class="record-date">تاريخ الصيانة: ${escapeHtml(dateText)}</span>
-                        <span class="record-km">${escapeHtml(kmText)} كم</span>
-                    </div>
-                    <div class="record-details">
-                        ${escapeHtml(detailsText)}
-                    </div>
-                    <div class="record-footer">
-                        <span>المركز: Hossam Service Express</span>
-                        <span>الفني المسؤول: ${escapeHtml(techText)}</span>
-                    </div>
-                `;
+        card.innerHTML = `
+            <div class="record-header">
+                <span class="record-date">تاريخ الصيانة: ${escapeHtml(dateText)}</span>
+                <span class="record-km">${escapeHtml(kmText)} كم</span>
+            </div>
+            <div class="record-details">
+                ${escapeHtml(detailsText)}
+            </div>
+            <div class="record-footer">
+                <span>المركز: Hossam Service Express</span>
+                <span>الفني المسؤول: ${escapeHtml(techText)}</span>
+            </div>
+        `;
 
-                resultsArea.appendChild(card);
-            });
-        }
+        resultsArea.appendChild(card);
+    });
+}
 
         /**
          * @function escapeHtml
