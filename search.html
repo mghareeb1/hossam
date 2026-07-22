@@ -512,61 +512,62 @@
          * @description الرابط المباشر للسكريبت السحابي (Google Apps Script Web App) المربوط بجدول بيانات الصيانات.
          * @advice نصائح عند التعامل معها: عند إعداد سكريبت جوجل وإصدار رابط Web App، قم باستبدال القيمة المخصصة بالأسفل بالرابط الجديد.
          */
-        const GOOGLE_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwLMSTaJk_6glW1TqaFbu4xKmqBpcbSqNHe-hzEJejCKpUjTCfBl98q_oYteooqM3au/exec';
+        // تعريف رابط النشر المحدث لخدمة Google Apps Script
+const GOOGLE_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbz3dQDsW7_o0fvCWf8-l1s8c4rGGxjdUAOSw3TmAmPIAo8vnVf02fksc947r7xrezSb/exec';
 
-        /**
-         * @function handleSearch
-         * @description إدارة عملية البحث والاستعلام عن الصيانات بطلب البيانات عبر بروتوكول HTTP GET واستعراض النتائج بنعومة.
-         * @features تتضمن التحقق من إدخال البيانات، إظهار مؤشرات التحميل، التعامل الاحترافي مع الأخطاء واستعراض النتائج بصورة بطاقات.
-         * @connected_to مربوطة بحدث التقديم (onsubmit) لنموذج البحث `searchForm`.
-         * @advice نصائح عند التعامل معها: التأكد من صلاحية رابط API وتوافق معلمات الاستعلام مع السكريبت السحابي.
-         * @param {Event} event - كائن الحدث لمنع التنشيط التلقائي للنموذج.
-         */
-        function handleSearch(event) {
-            event.preventDefault();
+/**
+ * @function handleSearch
+ * @description إدارة عملية البحث والاستعلام عن الصيانات بطلب البيانات عبر بروتوكول HTTP GET واستعراض النتائج بنعومة.
+ * @features تتضمن التحقق من إدخال البيانات، إظهار مؤشرات التحميل، التعامل الاحترافي مع الأخطاء، واستعراض النتائج بصورة بطاقات عبر الرابط السحابي المحدث.
+ * @connected_to مربوطة بحدث التقديم (onsubmit) لنموذج البحث `searchForm` ودالة `renderResults`.
+ * @advice نصائح عند التعامل معها: التأكد من توفر متغير `GOOGLE_SCRIPT_WEB_APP_URL` في النطاق العام للصفحة ومطابقة المخرجات مع دالة العرض.
+ * @param {Event} event - كائن الحدث لمنع التنشيط التلقائي للنموذج.
+ */
+function handleSearch(event) {
+    event.preventDefault();
 
-            const nameInput = document.getElementById('customerName').value.trim();
-            const phoneInput = document.getElementById('customerPhone').value.trim();
-            const btnSubmit = document.getElementById('btnSubmit');
-            const btnSpinner = document.getElementById('btnSpinner');
-            const btnText = document.getElementById('btnText');
-            const resultsArea = document.getElementById('resultsArea');
+    const nameInput = document.getElementById('customerName').value.trim();
+    const phoneInput = document.getElementById('customerPhone').value.trim();
+    const btnSubmit = document.getElementById('btnSubmit');
+    const btnSpinner = document.getElementById('btnSpinner');
+    const btnText = document.getElementById('btnText');
+    const resultsArea = document.getElementById('resultsArea');
 
-            if (!nameInput || !phoneInput) {
-                alert('يرجى إدخال اسم العميل ورقم الهاتف بشكل صحيح للمتابعة.');
-                return;
+    if (!nameInput || !phoneInput) {
+        alert('يرجى إدخال اسم العميل ورقم الهاتف بشكل صحيح للمتابعة.');
+        return;
+    }
+
+    // تفعيل حالة التحميل وتعطيل الزر مؤقتاً
+    btnSubmit.disabled = true;
+    btnSpinner.style.display = 'inline-block';
+    btnText.textContent = 'جاري البحث...';
+    resultsArea.innerHTML = '<div class="status-box">جاري الاتصال بالسجل السحابي لجلب بيانات الصيانة...</div>';
+
+    // بناء رابط الطلب مع المحددات
+    const requestUrl = `${GOOGLE_SCRIPT_WEB_APP_URL}?name=${encodeURIComponent(nameInput)}&phone=${encodeURIComponent(phoneInput)}`;
+
+    fetch(requestUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('فشل الاستجابة من خادم البيانات');
             }
-
-            // تفعيل حالة التحميل وتعطيل الزر مؤقتاً
-            btnSubmit.disabled = true;
-            btnSpinner.style.display = 'inline-block';
-            btnText.textContent = 'جاري البحث...';
-            resultsArea.innerHTML = '<div class="status-box">جاري الاتصال بالسجل السحابي لجلب بيانات الصيانة...</div>';
-
-            // بناء رابط الطلب مع المحددات
-            const requestUrl = `${GOOGLE_SCRIPT_WEB_APP_URL}?name=${encodeURIComponent(nameInput)}&phone=${encodeURIComponent(phoneInput)}`;
-
-            fetch(requestUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('فشل الاستجابة من خادم البيانات');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    renderResults(data);
-                })
-                .catch(error => {
-                    console.error('خطأ في جلب بيانات الصيانة:', error);
-                    resultsArea.innerHTML = '<div class="status-box">عذراً، تعذر الاتصال بسجل البيانات حالياً. يرجى التأكد من الاتصال بالإنترنت وإعادة المحاولة.</div>';
-                })
-                .finally(() => {
-                    // إعادة الزر لحالته الطبيعية
-                    btnSubmit.disabled = false;
-                    btnSpinner.style.display = 'none';
-                    btnText.textContent = 'بحث عن الصيانات';
-                });
-        }
+            return response.json();
+        })
+        .then(data => {
+            renderResults(data);
+        })
+        .catch(error => {
+            console.error('خطأ في جلب بيانات الصيانة:', error);
+            resultsArea.innerHTML = '<div class="status-box">عذراً، تعذر الاتصال بسجل البيانات حالياً. يرجى التأكد من الاتصال بالإنترنت وإعادة المحاولة.</div>';
+        })
+        .finally(() => {
+            // إعادة الزر لحالته الطبيعية
+            btnSubmit.disabled = false;
+            btnSpinner.style.display = 'none';
+            btnText.textContent = 'بحث عن الصيانات';
+        });
+}
 
         /**
          * @function renderResults
