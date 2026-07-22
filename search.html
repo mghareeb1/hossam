@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استعلام سجل الصيانات - Hossam Service Express</title>
+    <!-- استدعاء خطوط Google Fonts: Cairo الحديث للمحتوى العربي و Montserrat للعبارات اللاتينية -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================
+           الهوية البصرية والألوان المعتمدة بناءً على الشعار
+           ========================================== */
+        :root {
+            --bg-metallic-start: #2d3238;   /* رمادي معدني (Gunmetal) للرأس */
+            --bg-metallic-end: #111315;     /* كربون داكن في الأسفل */
+            --accent-red: #c61a29;           /* الأحمر الميتاليك */
+            --accent-blue: #1b4d8d;          /* الأزرق الفاخر */
+            --glass-bg: rgba(22, 24, 28, 0.85); /* حاويات زجاجية داكنة */
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --input-bg: rgba(10, 11, 13, 0.6);
+            --text-pure: #ffffff;
+            --text-muted: #9ea3a9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', 'Montserrat', 'Segoe UI', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-metallic-end);
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(180deg, var(--bg-metallic-start) 0%, var(--bg-metallic-end) 100%);
+            background-size: 25px 25px, 25px 25px, 100% 100%;
+            background-attachment: fixed;
+            color: var(--text-pure);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ==========================================
+           شاشة التحميل السينمائية (Cinematic Loader)
+           ========================================== */
+        #loader {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-metallic-end);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.6s;
+        }
+        
+        .loader-logo {
+            max-width: 200px;
+            height: auto;
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(0.97); filter: drop-shadow(0 0 10px rgba(198, 26, 41, 0.15)); opacity: 0.6; }
+            50% { transform: scale(1.03); filter: drop-shadow(0 0 25px rgba(198, 26, 41, 0.45)); opacity: 1; }
+        }
+
+        body.loaded #loader {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* ==========================================
+           المحتوى الأساسي والتصميم الهيكلي
+           ========================================== */
+        .container {
+            z-index: 2;
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header-nav {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            color: var(--text-pure);
+            border-color: var(--accent-blue);
+            background: rgba(27, 77, 141, 0.1);
+        }
+
+        .logo-small {
+            max-width: 130px;
+            height: auto;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+        }
+
+        /* ==========================================
+           بطاقة البحث والمدخلات (Search Card)
+           ========================================== */
+        .search-card {
+            width: 100%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 25px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+        }
+
+        .card-header-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-pure);
+            text-align: center;
+        }
+
+        .card-header-sub {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-pure);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-input {
+            width: 100%;
+            background: var(--input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: var(--text-pure);
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 12px rgba(27, 77, 141, 0.35);
+            background: rgba(15, 17, 20, 0.9);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--accent-blue), #12345e);
+            color: var(--text-pure);
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            box-shadow: 0 6px 20px rgba(27, 77, 141, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(27, 77, 141, 0.5);
+            background: linear-gradient(135deg, #225cb0, var(--accent-blue));
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ==========================================
+           منطقة عرض النتائج (Results Section)
+           ========================================== */
+        .results-section {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .record-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-right: 4px solid var(--accent-red);
+            border-radius: 14px;
+            padding: 18px 20px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+            animation: fadeIn 0.5s cubic-bezier(0.215, 0.610, 0.355, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+        }
+
+        .record-date {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-pure);
+        }
+
+        .record-km {
+            font-size: 0.78rem;
+            background: rgba(198, 26, 41, 0.12);
+            color: #ff4d5e;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            border: 1px solid rgba(198, 26, 41, 0.25);
+        }
+
+        .record-details {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .record-footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            padding-top: 6px;
+        }
+
+        .status-box {
+            text-align: center;
+            padding: 25px;
+            background: var(--glass-bg);
+            border-radius: 14px;
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+
+        .spinner-icon {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ==========================================
+           تذييل الصفحة
+           ========================================== */
+        .footer-container {
+            text-align: center;
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        .footer-text {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            opacity: 0.5;
+            letter-spacing: 1.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- شاشة التحميل السينمائية -->
+    <div id="loader">
+        <img src="logo.png" alt="Loading Hossam Service Express..." class="loader-logo">
+    </div>
+
+    <div class="container">
+        
+        <!-- الشريط العلوي للتنقل والشعار -->
+        <div class="header-nav">
+            <a href="index.html" class="btn-back" aria-label="الرجوع للقائمة الرئيسية">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                </svg>
+                الرئيسية
+            </a>
+            <img src="logo.png" alt="Hossam Service Express Logo" class="logo-small">
+        </div>
+
+        <!-- بطاقة نموذج الاستعلام -->
+        <div class="search-card">
+            <h1 class="card-header-title">استعلام سجل الصيانات</h1>
+            <p class="card-header-sub">أدخل اسم العميل ورقم الهاتف للتحقق من السجلات السابقة</p>
+
+            <form id="searchForm" onsubmit="handleSearch(event)">
+                <div class="form-group">
+                    <label for="customerName" class="form-label">اسم العميل</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="customerName" class="form-input" placeholder="مثال: محمد غريب" required autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="customerPhone" class="form-label">رقم الهاتف المسجل</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="customerPhone" class="form-input" placeholder="مثال: 01012345678" required autocomplete="off">
+                    </div>
+                </div>
+
+                <button type="submit" id="btnSubmit" class="btn-submit">
+                    <span id="btnSpinner" class="spinner-icon"></span>
+                    <span id="btnText">بحث عن الصيانات</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- منطقة إظهار النتائج -->
+        <div id="resultsArea" class="results-section">
+            <!-- سيتم توليد كروت النتائج هنا برمجياً -->
+        </div>
+
+        <!-- تذييل الصفحة -->
+        <div class="footer-container">
+            <div class="footer-text">© 2026 Hossam Service Express. All Rights Reserved.</div>
+        </div>
+
+    </div>
+
+    <script>
+        /**
+         * @constant GOOGLE_SCRIPT_WEB_APP_URL
+         * @description الرابط المباشر للسكريبت السحابي (Google Apps Script Web App) المربوط بجدول بيانات الصيانات.
+         * @advice نصائح عند التعامل معها: عند إعداد سكريبت جوجل وإصدار رابط Web App، قم باستبدال القيمة المخصصة بالأسفل بالرابط الجديد.
+         */
+        const GOOGLE_SCRIPT_WEB_APP_URL = 'https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec';
+
+        /**
+         * @function handleSearch
+         * @description إدارة عملية البحث والاستعلام عن الصيانات بطلب البيانات عبر بروتوكول HTTP GET واستعراض النتائج بنعومة.
+         * @features تتضمن التحقق من إدخال البيانات، إظهار مؤشرات التحميل، التعامل الاحترافي مع الأخطاء واستعراض النتائج بصورة بطاقات.
+         * @connected_to مربوطة بحدث التقديم (onsubmit) لنموذج البحث `searchForm`.
+         * @param {Event} event - كائن الحدث لمنع التنشيط التلقائي للنموذج.
+         */
+        function handleSearch(event) {
+            event.preventDefault();
+
+            const nameInput = document.getElementById('customerName').value.trim();
+            const phoneInput = document.getElementById('customerPhone').value.trim();
+            const btnSubmit = document.getElementById('btnSubmit');
+            const btnSpinner = document.getElementById('btnSpinner');
+            const btnText = document.getElementById('btnText');
+            const resultsArea = document.getElementById('resultsArea');
+
+            if (!nameInput || !phoneInput) {
+                alert('يرجى إدخال اسم العميل ورقم الهاتف بشكل صحيح للمتابعة.');
+                return;
+            }
+
+            // تفعيل حالة التحميل وتعطيل الزر مؤقتاً
+            btnSubmit.disabled = true;
+            btnSpinner.style.display = 'inline-block';
+            btnText.textContent = 'جاري البحث...';
+            resultsArea.innerHTML = '<div class="status-box">جاري الاتصال بالسجل السحابي لجلب بيانات الصيانة...</div>';
+
+            // بناء رابط الطلب مع المحددات
+            const requestUrl = `${GOOGLE_SCRIPT_WEB_APP_URL}?name=${encodeURIComponent(nameInput)}&phone=${encodeURIComponent(phoneInput)}`;
+
+            fetch(requestUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('فشل الاستجابة من خادم البيانات');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    renderResults(data);
+                })
+                .catch(error => {
+                    console.error('خطأ في جلب بيانات الصيانة:', error);
+                    resultsArea.innerHTML = '<div class="status-box">عذراً، تعذر الاتصال بسجل البيانات حالياً. يرجى التأكد من الاتصال بالإنترنت وإعادة المحاولة.</div>';
+                })
+                .finally(() => {
+                    // إعادة الزر لحالته الطبيعية
+                    btnSubmit.disabled = false;
+                    btnSpinner.style.display = 'none';
+                    btnText.textContent = 'بحث عن الصيانات';
+                });
+        }
+
+        /**
+         * @function renderResults
+         * @description معالجة المصفوفة البرمجية الواردة من السكريبت وعرض كروت سجلات الصيانة بالتفصيل.
+         * @param {Array|Object} data - كائن الاستجابة المحتوي على سجلات صيانة العميل.
+         * @connected_to تم استدعاؤها داخل دالة `handleSearch` بعد استلام الـ JSON بنجاح.
+         */
+        function renderResults(data) {
+            const resultsArea = document.getElementById('resultsArea');
+            resultsArea.innerHTML = '';
+
+            // التحقق من وجود نتائج ملموسة
+            if (!data || (Array.isArray(data) && data.length === 0) || data.status === 'not_found') {
+                resultsArea.innerHTML = '<div class="status-box">لم يتم العثور على سجلات صيانة تطابق البيانات المدخلة. يرجى التأكد من الاسم ورقم الهاتف ومراجعة المركز.</div>';
+                return;
+            }
+
+            const records = Array.isArray(data) ? data : (data.records || []);
+
+            if (records.length === 0) {
+                resultsArea.innerHTML = '<div class="status-box">لم يتم العثور على سجلات صيانة تطابق البيانات المدخلة.</div>';
+                return;
+            }
+
+            // عرض كل كارت صيانة بترتيب زمني
+            records.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'record-card';
+
+                const dateText = item.date || item.التاريخ || 'غير محدد';
+                const kmText = item.km || item.العداد || 'N/A';
+                const detailsText = item.details || item.البيان || item.تفاصيل_الصيانة || 'صيانة دورية عامة';
+                const techText = item.technician || item.الفني || 'قسم الصيانة المعتمد';
+
+                card.innerHTML = `
+                    <div class="record-header">
+                        <span class="record-date">تاريخ الصيانة: ${escapeHtml(dateText)}</span>
+                        <span class="record-km">${escapeHtml(kmText)} كم</span>
+                    </div>
+                    <div class="record-details">
+                        ${escapeHtml(detailsText)}
+                    </div>
+                    <div class="record-footer">
+                        <span>المركز: Hossam Service Express</span>
+                        <span>الفني المسؤول: ${escapeHtml(techText)}</span>
+                    </div>
+                `;
+
+                resultsArea.appendChild(card);
+            });
+        }
+
+        /**
+         * @function escapeHtml
+         * @description تنقية النصوص المدخلة والمسترجعة لمنع هجمات XSS وضمان أمان عرض البيانات على الواجهة.
+         * @param {string} str - النص المراد تنقيته.
+         * @returns {string} النص المنقى برمجياً.
+         */
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+    </script>
+
+    <script>
+        /**
+         * @function DOMContentLoaded_Handler
+         * @description إدارة إخفاء شاشة التحميل السينمائية عند اكتمال تحميل الصفحة.
+         */
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.body.classList.add('loaded');
+            }, 800);
+        });
+    </script>
+</body>
+</html>
