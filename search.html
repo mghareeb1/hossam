@@ -15,6 +15,7 @@
             --bg-metallic-end: #111315;     /* كربون داكن في الأسفل */
             --accent-red: #c61a29;           /* الأحمر الميتاليك */
             --accent-blue: #1b4d8d;          /* الأزرق الفاخر */
+            --accent-green: #28a745;         /* الأخضر المعتمد للحالات المستقرة */
             --glass-bg: rgba(22, 24, 28, 0.85); /* حاويات زجاجية داكنة */
             --glass-border: rgba(255, 255, 255, 0.05);
             --input-bg: rgba(10, 11, 13, 0.6);
@@ -84,7 +85,7 @@
         .container {
             z-index: 2;
             width: 100%;
-            max-width: 420px;
+            max-width: 520px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -224,23 +225,48 @@
         }
 
         /* ==========================================
-           منطقة عرض النتائج (Results Section)
+           منطقة عرض النتائج بتصميم المخطط الزمني للسيستم
            ========================================== */
         .results-section {
             width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 16px;
         }
 
-        .record-card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-right: 4px solid var(--accent-red);
-            border-radius: 14px;
-            padding: 18px 20px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+        .timeline-wrapper {
+            position: relative;
+            padding-right: 22px;
+            width: 100%;
+        }
+
+        .timeline-wrapper::before {
+            content: '';
+            position: absolute;
+            right: 5px;
+            top: 8px;
+            bottom: 8px;
+            width: 3px;
+            background: #007bff;
+            border-radius: 2px;
+        }
+
+        .timeline-node {
+            position: relative;
+            margin-bottom: 30px;
             animation: fadeIn 0.5s cubic-bezier(0.215, 0.610, 0.355, 1);
+        }
+
+        .timeline-node::after {
+            content: '';
+            position: absolute;
+            right: -23px;
+            top: 2px;
+            width: 11px;
+            height: 11px;
+            background-color: #007bff;
+            border: 2px solid var(--bg-metallic-end);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.8);
         }
 
         @keyframes fadeIn {
@@ -248,44 +274,135 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .record-header {
+        .timeline-date-header {
+            font-size: 0.83rem;
+            font-weight: 700;
+            color: var(--accent-green);
+            text-align: left;
+            direction: ltr;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .system-card {
+            background: #181b20;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-right: 4px solid var(--accent-green);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .system-card-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 10px;
-            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-bottom: 12px;
         }
 
-        .record-date {
-            font-size: 0.85rem;
+        .order-title {
+            font-size: 0.98rem;
             font-weight: 700;
-            color: var(--text-pure);
-        }
-
-        .record-km {
-            font-size: 0.78rem;
-            background: rgba(198, 26, 41, 0.12);
-            color: #ff4d5e;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-            border: 1px solid rgba(198, 26, 41, 0.25);
-        }
-
-        .record-details {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 10px;
-        }
-
-        .record-footer {
+            color: #ffffff;
             display: flex;
-            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .badges-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .sys-badge {
+            font-size: 0.74rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .sys-badge-tech {
+            background: rgba(40, 167, 69, 0.15);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .sys-badge-km {
+            background: rgba(0, 123, 255, 0.15);
+            color: #3897ff;
+            border: 1px solid rgba(0, 123, 255, 0.3);
+        }
+
+        .sys-badge-report {
+            background: #28a745;
+            color: #ffffff;
+            font-weight: 700;
+            border-radius: 6px;
+            padding: 4px 10px;
             font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.4);
-            padding-top: 6px;
+        }
+
+        .detail-section {
+            background: rgba(10, 11, 13, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 14px;
+        }
+
+        .detail-section-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .detail-section-body {
+            font-size: 0.83rem;
+            color: #d1d5db;
+            line-height: 1.7;
+            word-break: break-word;
+        }
+
+        .detail-section-footer {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tag-status-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #a0a6b1;
+            letter-spacing: 1px;
+        }
+
+        .tag-car-model {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #3897ff;
+            background: rgba(0, 123, 255, 0.12);
+            padding: 3px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 123, 255, 0.25);
         }
 
         .status-box {
@@ -402,6 +519,7 @@
          * @description إدارة عملية البحث والاستعلام عن الصيانات بطلب البيانات عبر بروتوكول HTTP GET واستعراض النتائج بنعومة.
          * @features تتضمن التحقق من إدخال البيانات، إظهار مؤشرات التحميل، التعامل الاحترافي مع الأخطاء واستعراض النتائج بصورة بطاقات.
          * @connected_to مربوطة بحدث التقديم (onsubmit) لنموذج البحث `searchForm`.
+         * @advice نصائح عند التعامل معها: التأكد من صلاحية رابط API وتوافق معلمات الاستعلام مع السكريبت السحابي.
          * @param {Event} event - كائن الحدث لمنع التنشيط التلقائي للنموذج.
          */
         function handleSearch(event) {
@@ -452,56 +570,106 @@
 
         /**
          * @function renderResults
-         * @description معالجة المصفوفة البرمجية الواردة من السكريبت وعرض كروت سجلات الصيانة بالتفصيل.
-         * @param {Array|Object} data - كائن الاستجابة المحتوي على سجلات صيانة العميل.
+         * @description معالجة المصفوفة البرمجية الواردة من السكريبت وعرض كروت سجلات الصيانة بتصميم مطابق تماماً لنظام الورشة الداخلي (POS Master).
+         * @features 
+         * - عرض خط زمني شجري (Timeline) مع طابع تاريخ ووقت الإنشاء بالدقة الكاملة.
+         * - تقسيم بيانات الصيانة إلى قسمين مستقلين: (ما تم إنجازه بالسيارة) و (قطع الغيار والزيوت المستهلكة).
+         * - تعيين القيم الافتراضية الرسمية ("غير مسجل"، "غير محدد") عند غياب البيانات القديمة.
+         * - معالجة الحماية من هجمات XSS عبر دالة escapeHtml.
          * @connected_to تم استدعاؤها داخل دالة `handleSearch` بعد استلام الـ JSON بنجاح.
+         * @advice نصائح عند التعامل معها: عند إضافة أعمدة جديدة في شيت جوجل، يرجى التأكد من إضافة المفاتيح الموازية لها في هذه الدالة.
+         * @param {Array|Object} data - كائن الاستجابة المحتوي على سجلات صيانة العميل.
          */
         function renderResults(data) {
-    const resultsArea = document.getElementById('resultsArea');
-    resultsArea.innerHTML = '';
+            const resultsArea = document.getElementById('resultsArea');
+            resultsArea.innerHTML = '';
 
-    if (!data || (Array.isArray(data) && data.length === 0) || data.status === 'not_found') {
-        resultsArea.innerHTML = '<div class="status-box">لم يتم العثور على سجلات صيانة تطابق البيانات المدخلة. يرجى التأكد من الاسم ورقم الهاتف ومراجعة المركز.</div>';
-        return;
-    }
+            // التحقق من وجود نتائج ملموسة
+            if (!data || (Array.isArray(data) && data.length === 0) || data.status === 'not_found') {
+                resultsArea.innerHTML = '<div class="status-box">لم يتم العثور على سجلات صيانة تطابق البيانات المدخلة. يرجى التأكد من الاسم ورقم الهاتف ومراجعة المركز.</div>';
+                return;
+            }
 
-    const records = Array.isArray(data) ? data : (data.records || []);
+            const records = Array.isArray(data) ? data : (data.records || []);
 
-    if (records.length === 0) {
-        resultsArea.innerHTML = '<div class="status-box">لم يتم العثور على سجلات صيانة تطابق البيانات المدخلة.</div>';
-        return;
-    }
+            if (records.length === 0) {
+                resultsArea.innerHTML = '<div class="status-box">لم يتم العثور على سجلات صيانة تطابق البيانات المدخلة.</div>';
+                return;
+            }
 
-    records.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'record-card';
+            // إنشاء حاوية الشريط الزمني
+            const timelineWrapper = document.createElement('div');
+            timelineWrapper.className = 'timeline-wrapper';
 
-        const dateText = item.date || item.التاريخ || 'غير محدد';
-        const kmText = item.km || item.العداد || 'N/A';
-        const detailsText = item.details || item.البيان || item.تفاصيل_الصيانة || 'صيانة دورية عامة';
-        const techText = item.technician || item.الفني || 'قسم الصيانة المعتمد';
+            // عرض كل كارت صيانة بتنسيق مطابق لنظام POS Master
+            records.forEach(item => {
+                const node = document.createElement('div');
+                node.className = 'timeline-node';
 
-        card.innerHTML = `
-            <div class="record-header">
-                <span class="record-date">تاريخ الصيانة: ${escapeHtml(dateText)}</span>
-                <span class="record-km">${escapeHtml(kmText)} كم</span>
-            </div>
-            <div class="record-details">
-                ${escapeHtml(detailsText)}
-            </div>
-            <div class="record-footer">
-                <span>المركز: Hossam Service Express</span>
-                <span>الفني المسؤول: ${escapeHtml(techText)}</span>
-            </div>
-        `;
+                // استخراج الحقول برمجياً مع دعم مختلف التسميات المحتملة
+                const cardId = item.card_id || item['رقم الكارت'] || item.id || 'غير مسجل';
+                const createdDate = item.created_at || item['تاريخ الإنشاء'] || item.date || item['التاريخ'] || 'غير محدد';
+                const kmValue = (item.mileage && String(item.mileage).trim() !== '') ? `${item.mileage} كم` : (item['قراءة العداد'] && String(item['قراءة العداد']).trim() !== '' ? `${item['قراءة العداد']} كم` : 'غير مسجل');
+                const techValue = item.technician || item['الفني المسؤول'] || item['الفني'] || 'غير محدد';
+                const carModelValue = item.car_model || item['السيارة / الموديل'] || item['السيارة'] || 'Volkswagen';
+                const statusValue = item.status || item['حالة الكارت'] || item['الحالة'] || 'تقرير فني خروج';
 
-        resultsArea.appendChild(card);
-    });
-}
+                // التفاصيل والقطع
+                const servicesDoneValue = item.services_done || item['ما تم إنجازه'] || item.details || item['البيان'] || 'لا توجد تفاصيل أعمال مسجلة';
+                const partsUsedValue = item.parts_used || item['قطع الغيار والزيوت'] || item['قطع الغيار'] || 'لا توجد قطع غيار مسجلة';
+
+                node.innerHTML = `
+                    <div class="timeline-date-header">
+                        <span>🕒 ${escapeHtml(String(createdDate))}</span>
+                    </div>
+
+                    <div class="system-card">
+                        <!-- الشريط العلوي لطلب الصيانة -->
+                        <div class="system-card-top">
+                            <div class="order-title">
+                                🛠️ أمر صيانة الورشة #${escapeHtml(String(cardId))}
+                            </div>
+                            <div class="badges-wrapper">
+                                <span class="sys-badge sys-badge-tech">👤 الفني: ${escapeHtml(String(techValue))}</span>
+                                <span class="sys-badge sys-badge-km">🌐 العداد: ${escapeHtml(String(kmValue))}</span>
+                                <span class="sys-badge-report">${escapeHtml(String(statusValue))}</span>
+                            </div>
+                        </div>
+
+                        <!-- قسم ما تم إنجازه بالسيارة -->
+                        <div class="detail-section">
+                            <div class="detail-section-title">⚙️ ما تم إنجازه بالسيارة:</div>
+                            <div class="detail-section-body">${escapeHtml(String(servicesDoneValue))}</div>
+                            <div class="detail-section-footer">
+                                <span class="tag-status-label">DONE |||||</span>
+                                <span class="tag-car-model">${escapeHtml(String(carModelValue))}</span>
+                            </div>
+                        </div>
+
+                        <!-- قسم قطع الغيار والزيوت المستهلكة -->
+                        <div class="detail-section">
+                            <div class="detail-section-title">⚙️ قطع الغيار والزيوت المستهلكة:</div>
+                            <div class="detail-section-body">${escapeHtml(String(partsUsedValue))}</div>
+                            <div class="detail-section-footer">
+                                <span class="tag-status-label">PARTS |||||</span>
+                                <span class="tag-car-model">${escapeHtml(String(carModelValue))}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                timelineWrapper.appendChild(node);
+            });
+
+            resultsArea.appendChild(timelineWrapper);
+        }
 
         /**
          * @function escapeHtml
          * @description تنقية النصوص المدخلة والمسترجعة لمنع هجمات XSS وضمان أمان عرض البيانات على الواجهة.
+         * @features تبديل الرموز الحساسة (&, <, >, ", ') بالرموز النظيفة الموازية لها في HTML.
+         * @connected_to تم استدعاؤها داخل دالة `renderResults` لتنقية كل حقل قبل إدراجه في الشاشة.
+         * @advice نصائح عند التعامل معها: عدم تطبيقها على النصوص المحتوية على وسم HTML ترغب في معالجته مسبقاً.
          * @param {string} str - النص المراد تنقيته.
          * @returns {string} النص المنقى برمجياً.
          */
@@ -520,6 +688,8 @@
         /**
          * @function DOMContentLoaded_Handler
          * @description إدارة إخفاء شاشة التحميل السينمائية عند اكتمال تحميل الصفحة.
+         * @connected_to مربوطة بالحدث `DOMContentLoaded` لكمال استجابة عناصر الواجهة.
+         * @advice نصائح عند التعامل معها: مراعاة المهلة الزمنية لضمان نعومة انتقال واجهة التحميل.
          */
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
