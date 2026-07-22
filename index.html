@@ -190,7 +190,7 @@
             color: var(--accent-red);
         }
 
-        /* تفاعل أزرار خدمة العملاء والشكاوى (الأزرق الفخم) */
+        /* تفاعل أزرار خدمة العملاء والشكاوى والسجلات (الأزرق الفخم) */
         .card-blue:hover {
             border-color: rgba(27, 77, 141, 0.45);
             box-shadow: 0 12px 24px rgba(27, 77, 141, 0.12);
@@ -275,6 +275,17 @@
         <!-- شبكة الخيارات التفاعلية الموجهة للعملاء -->
         <div class="grid-container">
             
+            <!-- Maintenance History Search Button (كارت الاستعلام عن سجل الصيانات السابقة) -->
+            <a href="search.html" class="action-card card-blue" aria-label="Maintenance History">
+                <div class="card-icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.25 2.52.77-1.28-3.52-2.09V8z"/></svg>
+                </div>
+                <div class="card-details">
+                    <span class="card-title">Maintenance History</span>
+                    <span class="card-desc">الاستعلام عن سجل الصيانات السابقة لسيارتك</span>
+                </div>
+            </a>
+
             <!-- Google Maps Review Button -->
             <a href="https://search.google.com/local/writereview?placeid=ChIJJ1KZR_E-WBQRb4YdwIv6Zk0" target="_blank" class="action-card card-red" aria-label="Rate Us on Google Maps">
                 <div class="card-icon-wrapper">
@@ -340,6 +351,10 @@
     </div>
 
     <script>
+        /**
+         * @function copyInstapayNumber
+         * @description نسخ رقم حساب إنستاباي المعتمد لمركز الصيانة تلقائياً لحافظة جهاز العميل.
+         */
         function copyInstapayNumber() {
             const instapayNum = '01110696668';
             navigator.clipboard.writeText(instapayNum).then(() => {
@@ -350,6 +365,10 @@
             });
         }
 
+        /**
+         * @function copyVodafoneNumber
+         * @description نسخ رقم محفظة فودافون كاش الرسمية للمركز تلقائياً لحافظة جهاز العميل.
+         */
         function copyVodafoneNumber() {
             const vodafoneNum = '01038515755';
             navigator.clipboard.writeText(vodafoneNum).then(() => {
@@ -362,6 +381,10 @@
     </script>
 
     <script>
+        /**
+         * @function DOMContentLoaded_Handler
+         * @description التحكم في إنهاء عرض شاشة التحميل بنعومة.
+         */
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 document.body.classList.add('loaded');
